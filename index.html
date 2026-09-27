@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relógio Mundial Dinâmico</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Relógio Mundial Global</h1>
+        
+        <!-- Barra de Busca -->
+        <div class="search-container">
+            <input type="text" id="search-input" placeholder="Digite QUALQUER cidade ou país... (Ex: Milão, Cairo, Manaus)">
+            <button id="search-button">Buscar</button>
+        </div>
+        <p id="error-message" class="error"></p>
+
+        <!-- Cartão do Relógio Pesquisado -->
+        <div id="searched-clock" class="local-clock searched-city-container">
+            <h2 id="searched-name">Nenhum local pesquisado</h2>
+            <div id="searched-time" class="time">--:--:--</div>
+            <p id="searched-timezone" class="timezone-label">Digite um local na internet para ativar a busca global.</p>
+        </div>
+
+        <!-- Horário Local do Usuário -->
+        <div class="local-clock">
+            <h2>Seu Horário Local</h2>
+            <div id="local-time" class="time">00:00:00</div>
+        </div>
+
+        <!-- Cidades Fixas de Exemplo -->
+        <div class="world-clocks">
+            <div class="clock-card">
+                <h3>Nova York 🇺🇸</h3>
+                <div id="ny-time" class="time">00:00:00</div>
+            </div>
+            <div class="clock-card">
+                <h3>Londres 🇬🇧</h3>
+                <div id="london-time" class="time">00:00:00</div>
+            </div>
+            <div class="clock-card">
+                <h3>Tóquio 🇯🇵</h3>
+                <div id="tokyo-time" class="time">00:00:00</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

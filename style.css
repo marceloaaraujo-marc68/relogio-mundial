@@ -1,0 +1,105 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f0f2f5;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px 0;
+}
+
+.container {
+    text-align: center;
+    width: 90%;
+    max-width: 800px;
+}
+
+h1 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+/* Estilo da Pesquisa */
+.search-container {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+#search-input {
+    flex: 1;
+    padding: 12px 20px;
+    font-size: 1rem;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    outline: none;
+}
+
+#search-input:focus {
+    border-color: #2980b9;
+}
+
+#search-button {
+    padding: 12px 24px;
+    font-size: 1rem;
+    background-color: #2980b9;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+#search-button:hover {
+    background-color: #2471a3;
+}
+
+.error {
+    color: #e74c3c;
+    margin-bottom: 15px;
+    font-weight: bold;
+    min-height: 20px;
+}
+
+/* Cartão Especial da Cidade Buscada */
+.searched-city-container {
+    background-color: #e8f4f8;
+    border: 2px solid #2980b9;
+}
+
+.time {
+    font-size: 2.2rem;
+    font-weight: bold;
+    color: #2980b9;
+    font-family: 'Courier New', Courier, monospace;
+    margin: 10px 0;
+}
+
+.local-clock {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    margin-bottom: 25px;
+}
+
+.world-clocks {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.clock-card {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.timezone-label {
+    font-size: 0.9rem;
+    color: #7f8c8d;
+    margin: 0;
+}

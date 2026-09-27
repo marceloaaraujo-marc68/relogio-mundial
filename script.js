@@ -7,19 +7,19 @@ function updateClocks() {
     // 1. Horário Local
     document.getElementById('local-time').textContent = now.toLocaleTimeString('pt-BR');
 
-    // 2. Horários Fixos Nativo-Seguros
+    // 2. Horários Fixos Seguros
     document.getElementById('ny-time').textContent = now.toLocaleTimeString('pt-BR', { timeZone: 'America/New_York' });
     document.getElementById('london-time').textContent = now.toLocaleTimeString('pt-BR', { timeZone: 'Europe/London' });
     document.getElementById('tokyo-time').textContent = now.toLocaleTimeString('pt-BR', { timeZone: 'Asia/Tokyo' });
 
-    // 3. Horário Pesquisado Dinâmico (Sincronizado via Timezone Oficial)
-    if (activeSearchedTimeZone) {
-        try {
-            const options = { timeZone: activeSearchedTimeZone, hour: '2-digit', minute: '2-digit', second: '2-digit' };
-            document.getElementById('searched-time').textContent = now.toLocaleTimeString('pt-BR', options);
-        } catch (e) {
-            console.error("Erro ao aplicar fuso horário na interface:", e);
-        }
+    // 3. Horário Pesquisado Dinâmico (Usa o cálculo matemático seguro por Longitude)
+    if (activeSearchedTimeZone !== null) {
+        // Pega o horário UTC universal do computador do usuário
+        const utcTime = now.getTime() + (now.getTimezoneOffset() * 60000);
+        // Cria uma nova data somando a diferença de fuso calculada
+        const calculatedDate = new Date(utcTime + (3600000 * activeSearchedTimeZone));
+        
+        document.getElementById('searched-time').textContent = calculatedDate.toLocaleTimeString('pt-BR');
     }
 }
 
@@ -31,12 +31,12 @@ async function searchCity() {
     errorEl.textContent = ""; 
 
     try {
-        // Passo 1: Busca a geolocalização do local digitado no OpenStreetMap
+        // Passo 1: Busca a cidade na API do OpenStreetMap (Permitida no GitHub Pages)
         const response = await fetch(`https://openstreetmap.org{encodeURIComponent(query)}&addressdetails=1&limit=1`, {
             headers: { 'User-Agent': 'RelogioMundialGlobalEducacional/1.0' }
         });
 
-        if (!response.ok) throw new Error("Erro na comunicação com o servidor de mapas.");
+        if (!response.ok) throw new Error("Erro de comunicação com o servidor.");
 
         const data = await response.json();
         if (!data || data.length === 0) {
@@ -45,33 +45,31 @@ async function searchCity() {
         }
 
         const location = data[0]; // Pega o primeiro resultado da lista
-        const lat = location.lat;
-        const lon = location.lon;
-
-        // Passo 2: Usamos a World Time API para descobrir o fuso horário oficial (IANA) com base na latitude e longitude
-        const tzResponse = await fetch(`https://timeapi.world{lat}&lon=${lon}`);
-        if (!tzResponse.ok) throw new Error("Erro de rede na API de fuso.");
-
-        const tzData = await tzResponse.json();
-        
-        // Configura as variáveis globais com a resposta oficial (Ex: "Europe/Paris")
-        activeSearchedTimeZone = tzData.timezone || tzData.timeZone; 
-        
         const address = location.address || {};
+        
+        // Organiza o nome da cidade para exibir na tela
         const city = address.city || address.town || address.village || address.state || query;
         const country = address.country || "";
         activeSearchedName = country ? `${city}, ${country}` : city;
 
+        // Passo 2: CÁLCULO MATEMÁTICO DO FUSO HORÁRIO (À prova de falhas)
+        // A Terra tem 360° e 24 fusos horários (360 / 24 = 15° para cada fuso de 1 hora).
+        // Pegamos a Longitude real do local encontrada no mapa e dividimos por 15.
+        const lon = parseFloat(location.lon);
+        activeSearchedTimeZone = Math.round(lon / 15);
+
+        // Formata o texto do fuso encontrado (Ex: GMT+1, GMT-3)
+        const gmtLabel = activeSearchedTimeZone >= 0 ? `GMT+${activeSearchedTimeZone}` : `GMT${activeSearchedTimeZone}`;
+
         // Renderiza na tela
         document.getElementById('searched-name').textContent = activeSearchedName;
-        document.getElementById('searched-timezone').textContent = `Fuso Horário: ${activeSearchedTimeZone}`;
+        document.getElementById('searched-timezone').textContent = `Fuso Horário Estimado: ${gmtLabel}`;
         
         updateClocks();
 
     } catch (error) {
         console.error("Erro capturado:", error);
-        // Mensagem limpa e profissional para qualquer erro real de conexão
-        errorEl.textContent = "Não foi possível carregar o horário deste local. Tente novamente em instantes.";
+        errorEl.textContent = "Erro ao processar a busca. Tente novamente.";
     }
 }
 

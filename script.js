@@ -36,7 +36,7 @@ async function searchCity() {
             headers: { 'User-Agent': 'RelogioMundialGlobalEducacional/1.0' }
         });
 
-        if (!response.ok) throw new Error("Bloqueio de CORS local ativo.");
+        if (!response.ok) throw new Error("Erro na comunicação com o servidor de mapas.");
 
         const data = await response.json();
         if (!data || data.length === 0) {
@@ -44,18 +44,18 @@ async function searchCity() {
             return;
         }
 
-        const location = data[0];
+        const location = data[0]; // Pega o primeiro resultado da lista
         const lat = location.lat;
         const lon = location.lon;
 
-        // Passo 2: Pergunta para a TimeAPI qual fuso horário pertence àquela coordenada exata
-        const tzResponse = await fetch(`https://timeapi.io{lat}&longitude=${lon}`);
+        // Passo 2: Usamos a World Time API para descobrir o fuso horário oficial (IANA) com base na latitude e longitude
+        const tzResponse = await fetch(`https://timeapi.world{lat}&lon=${lon}`);
         if (!tzResponse.ok) throw new Error("Erro de rede na API de fuso.");
 
         const tzData = await tzResponse.json();
         
-        // Configura as variáveis globais com a resposta 100% dinâmica do servidor
-        activeSearchedTimeZone = tzData.timeZone; // Ex: "Europe/Paris"
+        // Configura as variáveis globais com a resposta oficial (Ex: "Europe/Paris")
+        activeSearchedTimeZone = tzData.timezone || tzData.timeZone; 
         
         const address = location.address || {};
         const city = address.city || address.town || address.village || address.state || query;
@@ -70,8 +70,8 @@ async function searchCity() {
 
     } catch (error) {
         console.error("Erro capturado:", error);
-        // Alerta amigável sobre o comportamento esperado enquanto estiver em arquivo local
-        errorEl.textContent = "Bloqueio CORS do arquivo local (file://). Publique o site na internet para liberar as pesquisas mundiais!";
+        // Mensagem limpa e profissional para qualquer erro real de conexão
+        errorEl.textContent = "Não foi possível carregar o horário deste local. Tente novamente em instantes.";
     }
 }
 
